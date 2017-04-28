@@ -1,0 +1,42 @@
+package agent
+
+import (
+	"github.com/fsouza/go-dockerclient"
+	"fmt"
+)
+
+// Struct for strategy module
+type AgentDocker struct {}
+
+// Replace for Rooter definition
+type InfoIn struct {
+	Action string
+	Services []string
+	Informations map[string]string
+}
+
+// Add Event Listener in Docker client
+// IN : main chan for send InfoIn event
+func (AgentDocker) addEventListener(main chan *InfoIn) error {
+	endpoint := "unix:///var/run/docker.sock"
+	client, err := docker.NewClient(endpoint)
+	if err != nil {
+		return fmt.Errorf("Unable to start Docker EventListener :\n- %s", err)
+	}
+
+	listener := make(chan *docker.APIEvents)
+	if err := client.AddEventListener(listener); err != nil {
+		return fmt.Errorf("Unable to start Docker EventListener :\n- %s", err)
+	}
+
+	for {
+		f := <-listener
+		go parseDockerEvent(client, f)
+	}
+}
+
+func parseDockerEvent(client *docker.Client, event *docker.APIEvents) {
+
+	// TODO, chose event, parse in InfoIn format
+
+}

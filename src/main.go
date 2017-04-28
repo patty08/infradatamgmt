@@ -3,6 +3,7 @@ package main
 import (
    "os"
    "time"
+   "errors"
 )
 
 // Data structure of informations channels
@@ -18,9 +19,17 @@ type AgentIn interface {
    addEventListener(c chan *infoIN, who string)
 }
 
+type sAgentIn struct {
+   AgentIn AgentIn
+}
+
 //interface for service setting
 type ServiceOut interface {
    setAction(action string, data map[string]string)
+}
+
+type sServiceOut struct {
+   ServiceOut ServiceOut
 }
 
 // Exit listening and close stream
@@ -31,11 +40,15 @@ func closeListener()  {
 
 func process(i *infoIN) {
    if i != nil {
-	panic("data not found")
+	  errors.New("errors....")
    }
+   // var agent ServiceOut
 
    // TODO !!!
-   // serviceOut setAction(i.Action, i.Data)
+
+   // service := sServiceOut{ServiceSTDOUT{}}
+   // go service.setAction(i.Action, i.Data)
+
 }
 
 // start agent and open channels in and out stream
@@ -45,7 +58,10 @@ func main() {
    // open input channel and listening
    listener := make(chan *infoIN)
    // START ALL AGENTS
-   // agentDocker.startEventListener(listener)
+
+   // agent := sAgentIn{AgendDocker{}}
+   // go agent.startEventListener(listener)
+
    for {
 	  response := <-listener
 	  go process(response)

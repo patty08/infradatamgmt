@@ -9,7 +9,7 @@ import (
 
 //interface for agent setting
 type AgentIn interface {
-	addEventListener(c chan *InfoIN, who string) error
+	AddEventListener(c chan *agent.InfoIN, who string) error
 }
 
 type sAgentIn struct {
@@ -52,8 +52,9 @@ func Start() {
 	listener := make(chan *agent.InfoIN)
 	// START ALL AGENTS
 
-	a := sAgentIn{agent.AgentDocker{}}
-	go a.AgentIn.addEventListener(listener, "unix:///var/run/docker.sock")
+	agentDocker := agent.AgentDocker{}
+	a := sAgentIn{agentDocker}
+	go a.AgentIn.AddEventListener(listener, "unix:///var/run/docker.sock")
 
 	for {
 		response := <-listener

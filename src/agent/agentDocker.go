@@ -10,7 +10,7 @@ type AgentDocker struct {}
 
 // Add Event Listener in Docker client
 // IN : main chan for send InfoIn event
-func (AgentDocker) addEventListener(main chan *InfoIN, who string) error {
+func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
 	endpoint := who
 	client, err := docker.NewClient(endpoint)
 	if err != nil {
@@ -31,5 +31,7 @@ func (AgentDocker) addEventListener(main chan *InfoIN, who string) error {
 func parseDockerEvent(client *docker.Client, event *docker.APIEvents) {
 
 	// TODO, chose event, parse in InfoIn format
+
+	fmt.Print(event.Type + " " + event.Action )
 
 }

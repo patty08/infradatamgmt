@@ -8,17 +8,10 @@ import (
 // Struct for strategy module
 type AgentDocker struct {}
 
-// Replace for Rooter definition
-type InfoIn struct {
-	Action string
-	Services []string
-	Informations map[string]string
-}
-
 // Add Event Listener in Docker client
 // IN : main chan for send InfoIn event
-func (AgentDocker) addEventListener(main chan *InfoIn) error {
-	endpoint := "unix:///var/run/docker.sock"
+func (AgentDocker) addEventListener(main chan *InfoIN, who string) error {
+	endpoint := who
 	client, err := docker.NewClient(endpoint)
 	if err != nil {
 		return fmt.Errorf("Unable to start Docker EventListener :\n- %s", err)

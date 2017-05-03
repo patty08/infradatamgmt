@@ -3,6 +3,7 @@ package agent
 import (
 	"github.com/fsouza/go-dockerclient"
 	"fmt"
+   "strconv"
 )
 
 // Struct for strategy module
@@ -24,14 +25,24 @@ func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
 
 	for {
 		f := <-listener
-		go parseDockerEvent(client, f)
+		go parseDockerEvent(client, f, main)
 	}
 }
 
-func parseDockerEvent(client *docker.Client, event *docker.APIEvents) {
+func parseDockerEvent(client *docker.Client, event *docker.APIEvents, main chan *InfoIN) {
 
 	// TODO, chose event, parse in InfoIn format
 
-	fmt.Print(event.Type + " " + event.Action )
+	fmt.Print(event.Type + " " + event.Action +"\n")
+
+   infos := InfoIN{}
+   infos.Action = event.Action
+   infos.Services = []string{"STDOUT","DOCKER","LOGGING","METRICS"}
+   infos.Data = map[string]string {
+	  "ID" : event.ID,
+	  "TIMESTAMP" : strconv.FormatInt(event.Time, 10),
+   }
+
+   main <- &infos
 
 }

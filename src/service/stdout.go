@@ -7,6 +7,7 @@ import (
 type ServiceStdout struct {}
 
 func (ServiceStdout) SetAction(action string, data map[string]string) error {
-   fmt.Println("stdout .....")
+   fmt.Println("AGENT STDOUT sortie .....")
+   fmt.Println(action, data)
    return nil
 }

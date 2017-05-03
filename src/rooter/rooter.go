@@ -6,6 +6,8 @@ import (
    "errors"
    "agent"
    "service"
+   "fmt"
+   "github.com/docker/docker/api/types"
 )
 
 //interface for agent setting
@@ -17,13 +19,40 @@ type sAgentIn struct {
    AgentIn AgentIn
 }
 
-//interface for service setting
+//interface for service out settings
 type ServiceOut interface {
    SetAction(action string, data map[string]string) error
 }
 
+//interface for service docker settings
+type ServiceDocker interface {
+   SetAction(action string, data map[string]string) error
+}
+
+//interface for service logging settings
+type ServiceLogging interface {
+   SetAction(action string, data map[string]string) error
+}
+
+//interface for service metrics settings
+type ServiceMetrics interface {
+   SetAction(action string, data map[string]string) error
+}
+
 type sServiceOut struct {
-   ServiceOut ServiceOut
+   aServiceOut ServiceOut
+}
+
+type sServiceDocker struct {
+   aServiceOut ServiceDocker
+}
+
+type sServiceLogging struct {
+   aServiceOut ServiceDocker
+}
+
+type sServiceMetrics struct {
+   aServiceOut ServiceDocker
 }
 
 // Exit listening and close stream
@@ -33,23 +62,38 @@ func closeListener()  {
 }
 
 func process(i *agent.InfoIN) {
-   if i != nil {
+   fmt.Println("recupéré: ", i.Action,i.Services, i.Data)
+   if i == nil {
 	  errors.New("errors....")
    }
-   // var agent ServiceOut
-   switch i.Action {
-   case "z":
-	  serviceStdout := service.ServiceStdout{}
-	  a := sServiceOut{serviceStdout}
-	  a.ServiceOut.SetAction(i.Action, i.Data)
+
+   for k := 0 ; k <= len(i.Services)-1; k++{
+	  switch i.Services[k]{
+	  case "STDOUT":
+		 {
+			agent := sServiceOut{service.ServiceStdout{}}
+			go agent.aServiceOut.SetAction(i.Action, i.Data)
+		 }
+	  case "DOCKER":
+		 {
+			agent := sServiceDocker{service.ServiceDocker{}}
+			go agent.aServiceOut.SetAction(i.Action, i.Data)
+		 }
+	  case "LOGGING":
+		 {
+			agent := sServiceLogging{service.ServiceLogging{}}
+			go agent.aServiceOut.SetAction(i.Action, i.Data)
+		 }
+	  case "METRICS":
+		 {
+			agent := sServiceMetrics{service.ServiceMetrics{}}
+			go agent.aServiceOut.SetAction(i.Action, i.Data)
+		 }
+	  }
    }
-
-   // TODO !!!
-
-   // service := sServiceOut{ServiceSTDOUT{}}
-   // go service.setAction(i.Action, i.Data)
-
+   fmt.Println("fin process...")
 }
+
 
 // start agent and open channels in and out stream
 // input channel an listen to the structure value stream
@@ -62,12 +106,10 @@ func Start() {
    agentDocker := agent.AgentDocker{}
    a := sAgentIn{agentDocker}
    go a.AgentIn.AddEventListener(listener, "unix:///var/run/docker.sock")
-
    for {
-	  response := <-listener
-	  go process(response)
+	  go process(<- listener)
 	  time.Sleep (time.Second * 1)
    }
-
    closeListener()
+   fmt.Println("fin...")
 }

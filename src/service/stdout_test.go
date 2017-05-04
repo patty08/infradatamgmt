@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetAction(t *testing.T) {
+func TestSetActionStdout(t *testing.T) {
 	service := ServiceStdout{}
 
 	data := map[string]string {

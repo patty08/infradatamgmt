@@ -3,7 +3,6 @@ package client
 import (
    "agent"
    "service"
-   "fmt"
 )
 
 type ClientDocker struct {}
@@ -19,7 +18,6 @@ func (ClientDocker) SetAction(info *agent.InfoIN) error {
 		 {
 			agent := sServiceOut{service.ServiceStdout{}}
 			go agent.aServiceOut.SetAction(info.Action, info.Data)
-			fmt.Println("ici")
 		 }
 	  case "logging":
 		 {

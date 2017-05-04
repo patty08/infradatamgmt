@@ -43,16 +43,18 @@ func closeListener()  {
    os.Exit(0)
 }
 
+//noinspection GoImportUsedAsName
 func process(i *agent.InfoIN) {
-   //fmt.Println("recupéré: ", i.Action,i.Services, i.Data)
    if i == nil {
 	  errors.New("errors....")
    }
+   // TODO: match configuration settings into input file
    //namefile := "service/config.txt"
    //parseConfig(namefile)
 
    fmt.Println(i.Data)
    switch i.Data["client"]{
+   //noinspection GoImportUsedAsName
    case "docker":
 	  {
 		///agent := sServiceDocker{client.ClientDocker{}}
@@ -60,6 +62,7 @@ func process(i *agent.InfoIN) {
 		 agent := sClientOut{client.ClientDocker{}}
 		 go agent.aClientOut.SetAction(i)
 	  }
+   //noinspection GoImportUsedAsName
    default:
 	  fmt.Println("aaa", i.Data)
 	  agent := sClientOut{client.ClientDocker{}}
@@ -67,18 +70,18 @@ func process(i *agent.InfoIN) {
    }
 }
 
-func parseConfig(namefile string) {
-   stream, err := ioutil.ReadFile(namefile)
+//noinspection GoUnusedFunction
+func parseConfig(name string) {
+   stream, err := ioutil.ReadFile(name)
    if err != nil {
 	  log.Fatal(err)
    }
-   lireFichier := string(stream)
-   fmt.Println(lireFichier)
+   input := string(stream)
+   fmt.Println(input)
 }
 
 // start agent and open channels in and out stream
 // input channel an listen to the structure value stream
-// initialise des channels d'ecoute puis recupère les données du channel, traite les données inspecter puis envoi la configuration en sortie
 func Start() {
    // open input channel and listening
    listener := make(chan *agent.InfoIN)

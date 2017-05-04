@@ -20,7 +20,7 @@ type AgentDocker struct {}
 // Add Event Listener in Docker client
 // IN : main chan for send InfoIn event
 func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
-	client, err := ConnectDocker(who);
+	client, err := connectDocker(who);
 	if err != nil {
 		return fmt.Errorf("Unable to start Docker EventListener :\n- %s", err)
 	}
@@ -31,7 +31,7 @@ func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
 }
 
 // Connect agent to docker API
-func ConnectDocker(who string) (*client.Client, error) {
+func connectDocker(who string) (*client.Client, error) {
 	client, err := client.NewClient(who, "1.25", nil, nil)
 	if err != nil {
 		return nil, err
@@ -79,6 +79,8 @@ func parseDockerEvent(event events.Message, main chan *InfoIN) {
 		infos.Action = "stop"
 	} else if infos.Action == "unpause" {
 		infos.Action = "start"
+	} else if infos.Action == "destroy" {
+		infos.Action = "delete"
 	}
 
 	infos.Services = []string{}

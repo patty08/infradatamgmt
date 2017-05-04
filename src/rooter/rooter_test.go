@@ -1,28 +1,25 @@
 package rooter
 
 import (
-   "testing"
+	"testing"
+	"github.com/stretchr/testify/assert"
+	"agent"
 )
 
-// function close listening
-func TestcloseListener()  {
+func TestProcess(t *testing.T)  {
+	err := process(nil)
+	assert.NotNil(t, err)
 
-}
+	info := &agent.InfoIN{
+		Action : "create",
+		Services : []string{},
+		Data : map[string]string{},
+	}
 
-//noinspection GoImportUsedAsName
-func Testprocess(t *testing.T) {
+	err = process(info)
+	assert.Nil(t, err)
 
-	t.Fail()
-}
-
-
-//noinspection GoUnusedFunction
-func TestparseConfig(name string) {
-
-}
-
-// start agent and open channels in and out stream
-// input channel an listen to the structure value stream
-func TestStart(t *testing.T) {
-   t.Fail()
+	info.Data["client"] = "docker"
+	err = process(info)
+	assert.Nil(t, err)
 }

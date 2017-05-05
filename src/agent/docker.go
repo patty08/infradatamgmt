@@ -1,14 +1,14 @@
 package agent
 
 import (
-	"fmt"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/events"
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/client"
-	"golang.org/x/net/context"
-	"strconv"
-	"time"
+   "fmt"
+   "github.com/docker/docker/api/types"
+   "github.com/docker/docker/api/types/events"
+   "github.com/docker/docker/api/types/filters"
+   "github.com/docker/docker/client"
+   "golang.org/x/net/context"
+   "strconv"
+   "time"
 )
 
 // label for activate monitoring
@@ -25,12 +25,13 @@ func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
 		return fmt.Errorf("Unable to start Docker EventListener :\n- %s", err)
 	}
 
-	addDockerListener(client, main)
+   addDockerListener(client, main)
 
-	return nil
+   return nil
 }
 
 // Connect agent to docker API
+
 func connectDocker(who string) (*client.Client, error) {
 	client, err := client.NewClient(who, "1.25", nil, nil)
 	if err != nil {
@@ -43,32 +44,32 @@ func connectDocker(who string) (*client.Client, error) {
 
 // Start event listener on docker client
 func addDockerListener (client *client.Client, main chan *InfoIN) {
-	fmt.Println("Successfully start Event Listener")
+   fmt.Println("Successfully start Event Listener")
 
-	f := filters.NewArgs()
-	f.Add("event", "create")
-	f.Add("event", "start")
-	f.Add("event", "die")
-	f.Add("event", "destroy")
-	f.Add("type", "container")
-	f.Add("label", label_monitoring+"=enabled")
-	options := types.EventsOptions{Filters: f}
+   f := filters.NewArgs()
+   f.Add("event", "create")
+   f.Add("event", "start")
+   f.Add("event", "die")
+   f.Add("event", "destroy")
+   f.Add("type", "container")
+   f.Add("label", label_monitoring+"=enabled")
+   options := types.EventsOptions{Filters: f}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	eventsChan, errChan := client.Events(ctx, options)
+   ctx, cancel := context.WithCancel(context.Background())
+   eventsChan, errChan := client.Events(ctx, options)
 
-	go func(){
-		for event := range eventsChan {
-			go parseDockerEvent(event, main)
-		}
+   go func(){
+	  for event := range eventsChan {
+		 go parseDockerEvent(event, main)
+	  }
 
-	}()
+   }()
 
-	if err := <-errChan; err != nil {
-		fmt.Println("Event monitor throw this error: ", err)
-	}
+   if err := <-errChan; err != nil {
+	  fmt.Println("Event monitor throw this error: ", err)
+   }
 
-	defer cancel()
+   defer cancel()
 }
 
 // Parse docker envent information for rooter

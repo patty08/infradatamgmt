@@ -35,6 +35,7 @@ type sClientOut struct {
 
 // *** End Strategy client ***
 
+
 func process(i *agent.InfoIN) error {
 	if i == nil {
 		return errors.New("InfoIn Structure Error on process")
@@ -66,7 +67,6 @@ func process(i *agent.InfoIN) error {
 
 // start agent and open channels in and out stream
 // input channel an listen to the structure value stream
-// initialise des channels d'ecoute puis recupère les données du channel, traite les données inspecter puis envoi la configuration en sortie
 func Start() {
 	// open input channel and listening
 	listener := make(chan *agent.InfoIN)

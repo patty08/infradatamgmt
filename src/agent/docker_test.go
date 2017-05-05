@@ -1,11 +1,8 @@
 package agent
 
 import (
-	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/events"
-	"github.com/docker/docker/api/types"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
 	"testing"
 	"time"
 )

@@ -88,7 +88,7 @@ func TestParseDockerEventAction(t *testing.T) {
 	assert.Equal(t, "stop", out.Action, "Error parse Action")
 }
 
-func TestAddDockerListener(t *testing.T) {
+/*func TestAddDockerListener(t *testing.T) {
 	listener := make(chan *InfoIN, 1)
 	client , err := connectDocker("unix:///var/run/docker.sock")
 	assert.Nil(t, err)
@@ -115,7 +115,7 @@ func TestAddDockerListener(t *testing.T) {
 	out = <-listener
 	assert.Equal(t, "delete", out.Action, "Error parse Action")
 
-}
+}*/
 
 func TestAddEventListenerError(t *testing.T) {
 	listener := make(chan *InfoIN, 1)
@@ -125,7 +125,7 @@ func TestAddEventListenerError(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-func TestAddEventListener(t *testing.T) {
+/*func TestAddEventListener(t *testing.T) {
 	listener := make(chan *InfoIN, 1)
 	client , err := connectDocker("unix:///var/run/docker.sock")
 	assert.Nil(t, err)
@@ -153,4 +153,4 @@ func TestAddEventListener(t *testing.T) {
 
 	out = <-listener
 	assert.Equal(t, "delete", out.Action, "Error parse Action")
-}
+}*/

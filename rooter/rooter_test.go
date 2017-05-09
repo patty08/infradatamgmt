@@ -3,7 +3,7 @@ package rooter
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"agent"
+	"github.com/sebastienmusso/infradatamgmt/agent"
 )
 
 func TestProcess(t *testing.T)  {

@@ -1,7 +1,7 @@
 package main
 
 import (
-   "rooter"
+   "github.com/sebastienmusso/infradatamgmt/rooter"
 )
 
 func main() {

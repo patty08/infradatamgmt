@@ -1,8 +1,8 @@
 package client
 
 import (
-   "agent"
-   "service"
+   "github.com/sebastienmusso/infradatamgmt/agent"
+   "github.com/sebastienmusso/infradatamgmt/service"
 )
 
 type ClientDocker struct {}

@@ -1,8 +1,8 @@
 package rooter
 
 import (
-	"agent"
-	"client"
+	"github.com/sebastienmusso/infradatamgmt/agent"
+	"github.com/sebastienmusso/infradatamgmt/client"
 
 	"errors"
 	"time"

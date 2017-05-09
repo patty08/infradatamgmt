@@ -8,15 +8,20 @@ Feedback
 --
 Send ideas and questions to @treeptik Request features and report bugs using the GitHub Issue Tracker.
 
-Contributions
+Contributing
 --
-Contributions to this project are welcome, though please file an issue. before starting work on anything major.
+### Setting up your dev environment
 
-Getting the source
---
- _git clone https://github.com/sebastienmusso/infradatamgmt.git_
+Current Go version used for development is Golang 1.8.1.
+
+The location where you clone is important. Please clone under the source
+directory of your `GOPATH`. If you don't have `GOPATH` already set, you can
+simply set it to your home directory (`export GOPATH=$HOME`).
+
+    $ mkdir -p ${GOPATH}/src/github.com/sebastienmusso
+    $ cd ${GOPATH}/src/github.com/sebastienmusso
+    $ git clone https://github.com/sebastienmusso/infradatamgmt.git
 
 Crédits
 --
-Developpé par l'équipe Treeptik @2017
-
+Developed by Treeptik team @2017

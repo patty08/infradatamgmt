@@ -1,0 +1,33 @@
+version: '3'
+services:
+  elk-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    ports:
+     - "9200:9200"
+    environment:
+     - xpack.security.enabled=false 
+     - http.host=0.0.0.0
+     - transport.host=127.0.0.1
+  elk-kibana:
+    image: docker.elastic.co/kibana/kibana:5.4.0
+    network_mode: "host"
+    ports:
+     - "5601:5601"
+    environment:
+     - xpack.security.enabled=true
+     - ELASTICSEARCH_URL=http://localhost:9200
+    depends_on:
+      - elk-elasticsearch
+  elk-logstash:
+    image: docker.elastic.co/logstash/logstash:5.4.0
+    ports:
+     - "12201:12201"
+    expose:
+      - "12201/udp"
+    environment:
+     - ELASTICSEARCH_URL=http://localhost:9200
+    volumes:
+     - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+     - ./logstash/pipeline:/usr/share/logstash/pipeline
+    depends_on:
+      - elk-elasticsearch

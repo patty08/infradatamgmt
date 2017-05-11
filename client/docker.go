@@ -28,6 +28,7 @@ func (ClientDocker) SetAction(info *agent.InfoIN) error {
 		 {
 			agent := sServiceOut{service.ServiceMetrics{}}
 			go agent.aServiceOut.SetAction(info.Action, info.Data)
+			// todo: setting configuration for processors
 		 }
 	  }
    }

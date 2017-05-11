@@ -1,0 +1,29 @@
+#------------------------------- php_fpm Module ------------------------------
+- module: php_fpm
+  metricsets: ["pool"]
+  enabled: true
+  period: 10s
+  status_path: "/status"
+  hosts: ["localhost:8082"]
+  
+#================================ Processors ===================================
+
+# Processors are used to reduce the number of fields in the exported event or to
+# enhance the event with external metadata. This section defines a list of
+# processors that are applied one by one and the first one receives the initial
+# event:
+#
+#   event -> filter1 -> event1 -> filter2 ->event2 ...
+#
+# The supported processors are drop_fields, drop_event, include_fields, and
+# add_cloud_metadata.
+#
+# For example, you can use the following processors to keep the fields that
+# contain CPU load percentages, but remove the fields that contain CPU ticks
+# values:
+
+
+# php_fpm
+#processors:
+#- drop_fields:
+#   fields: [""]

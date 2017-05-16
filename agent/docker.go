@@ -11,14 +11,14 @@ import (
    "time"
 )
 
-// Label for activate monitoring
+// Label for activate monitoring.
 const label_monitoring string = "monitor"
 
 // Struct for strategy module
 type AgentDocker struct {}
 
-// Add Event Listener in Docker client
-// IN : main chan for send InfoIn event
+// Add Event Listener in Docker client.
+// IN : main chan for send InfoIn event.
 func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
 	client, err := connectDocker(who);
 	if err != nil {
@@ -30,7 +30,7 @@ func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
    return nil
 }
 
-// Connect agent to docker API
+// Connect agent to docker API.
 func connectDocker(who string) (*client.Client, error) {
 	client, err := client.NewClient(who, "1.25", nil, nil)
 	if err != nil {
@@ -41,7 +41,7 @@ func connectDocker(who string) (*client.Client, error) {
 	return client, nil
 }
 
-// Start event listener on docker client
+// Start event listener on docker client.
 func addDockerListener (client *client.Client, main chan *InfoIN) {
    fmt.Println("Successfully start Event Listener")
 
@@ -71,7 +71,7 @@ func addDockerListener (client *client.Client, main chan *InfoIN) {
    defer cancel()
 }
 
-// Parse docker event information for rooter.
+// Parse docker envent information for rooter.
 func parseDockerEvent(event events.Message, main chan *InfoIN) {
 	infos := &InfoIN{}
 	infos.Action = event.Action

@@ -5,15 +5,9 @@ import (
    "github.com/sebastienmusso/infradatamgmt/service"
 )
 
-<<<<<<< HEAD
-//Structure for Docker client.
+// Client structure.
 type ClientDocker struct {}
 
-=======
-
-type ClientDocker struct {}
-
->>>>>>> dee82e212a07b920d050360d0c910f991e60807c
 // Function choose the action to set for the agent services.
 // Services is the list of services to activate.
 // Data is all informations data send by the container.

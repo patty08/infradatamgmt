@@ -8,27 +8,22 @@ import (
 	"time"
 )
 
-// *** Strategy Agent ***
-
-// Interface for agent setting
+// Interface for an agent setting
 type AgentIn interface {
 	AddEventListener(c chan *agent.InfoIN, who string) error
 }
 
-// Structure for calling agent
+// Structure for an input agent
 type sAgentIn struct {
 	AgentIn AgentIn
 }
 
-// *** End Strategy Agent ***
-// *** Strategy client ***
-
-//Interface for client out settings
+// Interface for clients/services settings
 type ClientOut interface {
 	SetAction(info *agent.InfoIN) error
 }
 
-// Structure for calling client
+// Structure for an output client/service
 type sClientOut struct {
 	aClientOut ClientOut
 }

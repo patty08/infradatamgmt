@@ -11,5 +11,3 @@ type ServiceOut interface {
 type sServiceOut struct {
    aServiceOut ServiceOut
 }
-
-// *** End Strategy Service ***

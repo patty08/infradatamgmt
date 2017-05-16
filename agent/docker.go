@@ -31,7 +31,6 @@ func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
 }
 
 // Connect agent to docker API
-
 func connectDocker(who string) (*client.Client, error) {
 	client, err := client.NewClient(who, "1.25", nil, nil)
 	if err != nil {

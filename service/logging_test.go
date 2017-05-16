@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 func TestSetActionLogging(t *testing.T) {
 	service := ServiceLogging{}
 

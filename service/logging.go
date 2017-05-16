@@ -6,8 +6,11 @@ import (
 
 type ServiceLogging struct {}
 
+// Get action from the rooter in order to send to services logging.
 func (ServiceLogging) GetAction(action string, data map[string]string) error {
-   fmt.Println("AGENT LOGGING sortie .....")
+   println("AGENT LOGGING sortie .....")
    fmt.Println(action, data)
+   // todo: check how to proceed
+   setConfigServices(data["image"], data["application_type"], data["id"])
    return nil
 }

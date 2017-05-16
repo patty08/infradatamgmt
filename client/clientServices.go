@@ -2,7 +2,7 @@ package client
 
 // *** Strategy Service ***
 
-//interface for service out settings
+//Interface for service out settings
 type ServiceOut interface {
    SetAction(action string, data map[string]string) error
 }

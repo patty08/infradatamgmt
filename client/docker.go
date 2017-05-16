@@ -5,12 +5,12 @@ import (
    "github.com/sebastienmusso/infradatamgmt/service"
 )
 
+//Structure for Docker client.
 type ClientDocker struct {}
 
-// function choose the action to set for the agent services
-// services is the list of services to activate
-// data is all informations data send by the container
-
+// Function choose the action to set for the agent services.
+// Services is the list of services to activate.
+// Data is all informations data send by the container.
 func (ClientDocker) SetAction(info *agent.InfoIN) error {
    for k := 0 ; k <= len(info.Services)-1; k++{
 	  switch info.Services[k]{

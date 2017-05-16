@@ -33,12 +33,7 @@ type sClientOut struct {
 	aClientOut ClientOut
 }
 
-<<<<<<< HEAD
-// *** End Strategy client ***
 
-// Use informations returned by the agent to select the client
-=======
->>>>>>> dee82e212a07b920d050360d0c910f991e60807c
 func process(i *agent.InfoIN) error {
 	if i == nil {
 		return errors.New("InfoIn Structure Error on process")
@@ -69,11 +64,7 @@ func process(i *agent.InfoIN) error {
 }*/
 
 // Start agent and open channels in and out stream.
-<<<<<<< HEAD
-// Input channel and listen to the structure value stream
-=======
 // Input channel an listen to the structure value stream.
->>>>>>> dee82e212a07b920d050360d0c910f991e60807c
 func Start() {
 	// open input channel and listening
 	listener := make(chan *agent.InfoIN)

@@ -12,9 +12,9 @@ func TestSetActionStdout(t *testing.T) {
 		"monitor" : "enabled",
 		"logging" : "enabled",
 	}
-	err := service.SetAction("create", data)
+	err := service.GetAction("create", data)
 	assert.Nil(t, err)
 
-	err = service.SetAction("", data)
+	err = service.GetAction("", data)
 	assert.NotNil(t, err)
 }

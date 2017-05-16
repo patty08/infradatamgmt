@@ -9,7 +9,7 @@ import (
 type ServiceStdout struct {}
 
 // function to take action sting
-func (ServiceStdout) SetAction(action string, data map[string]string) error {
+func (ServiceStdout) GetAction(action string, data map[string]string) error {
    if action == "" {
 	  return errors.New("No action event")
    }

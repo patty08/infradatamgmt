@@ -6,11 +6,14 @@ import (
    "io"
    "os"
    "strings"
-   "src/github.com/pkg/errors"
    "fmt"
    "bytes"
    "log"
+   "io/ioutil"
 )
+
+const dirOriginal string = "./rooter/configuration/metricbeat/conf/original/"
+const dirCustom string = "./rooter/configuration/metricbeat/conf/custom/"
 
 type ClientDocker struct {}
 
@@ -25,19 +28,19 @@ func (ClientDocker) SetAction(info *agent.InfoIN) error {
 	  case "stdout":
 		 {
 			service := sServiceOut{service.ServiceStdout{}}
-			go service.aServiceOut.SetAction(info.Action, info.Data)
+			go service.aServiceOut.GetAction(info.Action, info.Data)
 		 }
 	  case "logging":
 		 {
 			service := sServiceOut{service.ServiceLogging{}}
-			go service.aServiceOut.SetAction(info.Action, info.Data)
+			go service.aServiceOut.GetAction(info.Action, info.Data)
 		 }
 	  case "metric":
 		 {
 			service := sServiceOut{service.ServiceMetrics{}}
-			go service.aServiceOut.SetAction(info.Action, info.Data)
+			go service.aServiceOut.GetAction(info.Action, info.Data)
 			// todo: setting configuration for processors
-			setConfigServices(info.Data["image"], info.Data["sys"])
+			setConfigServices(info.Data["image"], info.Data["application_type"], info.Data["id"])
 		 }
 	  }
    }
@@ -45,48 +48,83 @@ func (ClientDocker) SetAction(info *agent.InfoIN) error {
    return nil
 }
 
-// copie la configuration demandée dans /usr/share/metricbeat/custom/
-// args systeme = label system activate or not activate
-func setConfigServices(nomconf string, systeme string)  {
+// format the host id to string hosts: ["ID"]
+func formatHostName(hostid string) string{
+   if hostid == "" {
+	  fmt.Println("host name is empty")
+   }
+   name := bytes.NewBufferString(  "hosts: [\""+hostid)
+   name.WriteString("\"]")
+   return name.String()
+}
 
-   // todo : nom passé en label
-   // todo : system.yml à effacer
+// function to replace host line in the configuration file to the id of the container in /custom/file.yml
+func setidConfiguration(idContainer string, nomconf string) {
+
+   // format host
+   frmHost := formatHostName(idContainer)
+
+   // get file name from the name agent
+   // check if the configuration is available in host
+   fd, err := ioutil.ReadFile(dirCustom +nomconf+"_"+idContainer+".yml")
+   if err != nil {
+	  println("dest file not found:"+ dirCustom + nomconf + "_" + idContainer+ ".yml")
+	  log.Fatalln(err)
+   }
+
+   lines := strings.Split(string(fd), "\n")
+   for i, line := range lines {
+	  if strings.Contains(line, " hosts: [") {
+		 lines[i] = frmHost
+	  }
+   }
+   output := strings.Join(lines, "\n")
+   err = ioutil.WriteFile(dirCustom +string(nomconf+"_"+idContainer+".yml"), []byte(output), 0644)
+   if err != nil {
+	  log.Fatalln(err)
+   }
+}
+
+// copy file configuration to /usr/share/metricbeat/custom/, open the file and set host to container's id
+// nomconf is the name of the image docker hub
+// application_type must be set by user for setting configuration processors,
+// if not nomconf is checked for matching similar file configuration
+// id is the id of the container
+func setConfigServices(image string, application_type string, id string)  {
+   if application_type == "" {
+	  application_type = image
+   }
+   application_type = strings.ToLower(application_type)
    // check if configuration exist
-   conf := hasConfiguration(nomconf)
+   println(application_type)
 
-   // get file name from name agent
-   agentName := formatNameConfig(strings.ToLower(nomconf))
+   // get file name from name agent: name.yml
+   agentName := formatNameConfig(application_type)
 
    // check if the configuration is available in host
-   file, err := os.OpenFile("./rooter/configuration/metricbeat/conf/original/"+string(agentName),0,777)
+   file, err := os.OpenFile(dirOriginal +string(agentName),0,777)
    if err != nil {
-	  fmt.Println("src file not found: ./configuration/metricbeat/conf/original/"+agentName)
+	  fmt.Println("src file not found:" +dirOriginal +agentName)
 	  log.Fatal(err)
    }
-   fmt.Println(file)
-
+   // close at last
    defer file.Close()
 
-   // Set system configuration system when system label is on, -l sys=on
-   if systeme == "on"{
-	  fileSys := getSystemConfig()
-	  CopyFile(fileSys, "./rooter/configuration/metricbeat/conf/custom/system.yml")
-   }
+   CopyFile(file, dirCustom +string(agentName)+"_"+id+".yml")
+   setidConfiguration(id, string(agentName))
 
-   if conf != "" {
-	  CopyFile(file, "./rooter/configuration/metricbeat/conf/custom/"+string(conf)+".yml")
-   } else {
-	  CopyFile(file, "./rooter/configuration/metricbeat/conf/custom/"+string(agentName))
-   }
-   println("CONFIGURATION set: "+string(agentName))
+   println(">> configuration is set: "+string(agentName))
+
+   // replace the id in the file configuration with the ids in data
+   // find host: [" and replace to host : ["id"] in the custom configuration
+
    file.Close()
-
 }
 
 // change agent name in parameters to file name (eg: docker -> docker.yml)
 func formatNameConfig(a string) string {
    if a == "" {
-	  fmt.Println("name corrupted ")
+	  fmt.Println("configuration name corrupted ")
    }
    name := bytes.NewBufferString(a)
    name.WriteString(".yml")
@@ -113,8 +151,6 @@ func CopyFile(in io.Reader, dst string) (err error) {
 		 err = cerr
 	  }
    }()
-
-
    var bytes int64
    if bytes, err = io.Copy(out, in); err != nil {
 	  fmt.Println("io.Copy error")
@@ -127,28 +163,4 @@ func CopyFile(in io.Reader, dst string) (err error) {
 
 }
 
-// check if the name has configuration file
-func hasConfiguration(nomconf string) string{
-   if nomconf == "" {
-	  errors.New("input nomconf parameters null")
-   }
-   // input configurations available
-   isConfig := []string{"apache","docker","mongoDB","mySQL","nginx","php","postgreSQL","redis"}
-   var conf string
-   for i := range isConfig{
-	  if strings.HasPrefix(nomconf, isConfig[i]){
-		 conf = isConfig[i]
-		 fmt.Println("ConfName--> : "+conf)
-	  }
-   }
 
-   return string(conf)
-}
-
-func getSystemConfig() io.Reader{
-   file, err := os.OpenFile("./configuration/metricbeat/conf/original/system.yml",0,777)
-   if err == nil {
-	  log.Fatal(err)
-   }
-   return file
-}

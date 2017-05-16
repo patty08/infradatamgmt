@@ -9,7 +9,7 @@ import (
 func TestSetActionMetrics(t *testing.T) {
 	service := ServiceMetrics{}
 
-	err := service.SetAction("create", map[string]string {})
+	err := service.GetAction("create", map[string]string {})
 	assert.Nil(t, err)
 
 	//TODO write unit test

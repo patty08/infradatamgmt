@@ -5,7 +5,7 @@ import (
    "github.com/sebastienmusso/infradatamgmt/service"
 )
 
-
+// Client structure.
 type ClientDocker struct {}
 
 // Function choose the action to set for the agent services.

@@ -10,10 +10,12 @@ import (
    "strings"
 )
 
+// configuration directory
 const dirOriginal string = "./rooter/configuration/metricbeat/conf/original/"
 const dirCustom string = "./rooter/configuration/metricbeat/conf/custom/"
 
-// format the host id to string hosts: ["ID"]
+// Formatted the host id to string value:
+//	hosts: ["ID"].
 func formatHostName(hostid string) string{
    if hostid == "" {
 	  fmt.Println("host name is empty")
@@ -23,7 +25,7 @@ func formatHostName(hostid string) string{
    return name.String()
 }
 
-// function to replace host line in the configuration file to the id of the container in /custom/file.yml
+// Function to replace the line hosts in the configuration file to the id of the container in /custom/file.yml.
 func setidConfiguration(idContainer string, nomconf string) {
 
    // format host
@@ -50,11 +52,11 @@ func setidConfiguration(idContainer string, nomconf string) {
    }
 }
 
-// copy file configuration to /usr/share/metricbeat/custom/, open the file and set host to container's id
-// nomconf is the name of the image docker hub
-// application_type must be set by user for setting configuration processors,
-// if not nomconf is checked for matching similar file configuration
-// id is the id of the container
+// Copy configuration file to /usr/share/metricbeat/custom/, open the file and setidConfiguration.
+// 	Nomconf is the name of the image docker hub.
+// 	Application_type must be set by user for setting configuration processors,
+// if not nomconf is checked for matching similar file configuration.
+// 	id is the id of the container.
 func setConfigServices(image string, application_type string, id string)  {
    if application_type == "" {
 	  application_type = image
@@ -83,7 +85,7 @@ func setConfigServices(image string, application_type string, id string)  {
    println(">> configuration is set: "+string(agentName))
 }
 
-// change agent name in parameters to file name (eg: docker -> docker.yml)
+// Change agent's name in parameters to file name (eg: docker -> docker.yml).
 func formatNameConfig(a string) string {
    if a == "" {
 	  fmt.Println("configuration name corrupted ")
@@ -93,7 +95,7 @@ func formatNameConfig(a string) string {
    return name.String()
 }
 
-// copy file source to destination, in is the file to copy, dst is the path where the file must be paste
+// Copy source file in argument to destination source. The path where the file must be paste (see: dirOriginal, dirCustom)
 func CopyFile(in io.Reader, dst string) (err error) {
 
    // Does file already exist? Skip
@@ -122,7 +124,6 @@ func CopyFile(in io.Reader, dst string) (err error) {
 
    err = out.Sync()
    return
-
 }
 
 

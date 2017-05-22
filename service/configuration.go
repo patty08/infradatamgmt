@@ -72,16 +72,16 @@ func setConfigServices(image string, application_type string, id string)  {
    file, err := os.OpenFile(dirOriginal +string(agentName),0,777)
    if err != nil {
 	  fmt.Println("src file not found:" +dirOriginal +agentName)
-	  log.Fatal(err)
+	  println(err)
    }
    // close at last
    defer file.Close()
 
-   CopyFile(file, dirCustom +string(agentName)+"_"+id+".yml")
+   CopyFile(file, dirCustom +application_type+"_"+id+".yml")
 
    // replace the id in the file configuration with the ids in data
    // find host: [" and replace to host : ["id"] in the custom configuration
-   setidConfiguration(id, string(agentName))
+   setidConfiguration(id, application_type)
    println(">> configuration is set: "+string(agentName))
 }
 

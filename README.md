@@ -1,12 +1,12 @@
-About
+Surikator
 --
-Middleware agent for metrics automations Docker/Cloudunit
+This program is a middleware agent which get orchestrator events for monitoring.
 
 **Note**: This tool is a middleware for client/serveur container based on docker.
 
 Feedback
 --
-Send ideas and questions to @treeptik Request features and report bugs using the GitHub Issue Tracker.
+Send ideas and questions to @treeptik request features and report bugs using the GitHub Issue Tracker.
 
 Contributing
 --
@@ -24,4 +24,4 @@ simply set it to your home directory (`export GOPATH=$HOME`).
 
 Crédits
 --
-Developed by Treeptik team @2017
+Developed by Treeptik team @2017.

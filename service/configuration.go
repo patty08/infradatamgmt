@@ -16,26 +16,29 @@ const dirCustom string = "./rooter/configuration/metricbeat/conf/custom/"
 
 // Formatted the host id to string value:
 //	hosts: ["ID"].
-func formatHostName(hostid string) string{
-   if hostid == "" {
+func formatHostName(hostIP string) string{
+   if hostIP == "" {
 	  fmt.Println("host name is empty")
    }
-   name := bytes.NewBufferString(  "hosts: [\""+hostid)
+   name := bytes.NewBufferString(  "hosts: [\""+hostIP)
    name.WriteString("\"]")
    return name.String()
 }
 
 // Function to replace the line hosts in the configuration file to the id of the container in /custom/file.yml.
-func setidConfiguration(idContainer string, nomconf string) {
-
+// ipContainer is the ip adress of the running container
+// image is the base image of the container (application_type)
+// ipContainer is the ip adress of the running container
+func setidConfiguration(idContainer string, image string, ipContainer string) {
    // format host
-   frmHost := formatHostName(idContainer)
+   frmHost := formatHostName(ipContainer)
+   println(frmHost)
 
    // get file name from the name agent
    // check if the configuration is available in host
-   fd, err := ioutil.ReadFile(dirCustom +nomconf+"_"+idContainer+".yml")
+   fd, err := ioutil.ReadFile(dirCustom +image+"_"+idContainer+".yml")
    if err != nil {
-	  println("dest file not found:"+ dirCustom + nomconf + "_" + idContainer+ ".yml")
+	  println("dest file not found:"+ dirCustom + image + "_" + idContainer+ ".yml")
 	  log.Fatalln(err)
    }
 
@@ -46,18 +49,18 @@ func setidConfiguration(idContainer string, nomconf string) {
 	  }
    }
    output := strings.Join(lines, "\n")
-   err = ioutil.WriteFile(dirCustom +string(nomconf+"_"+idContainer+".yml"), []byte(output), 0644)
+   err = ioutil.WriteFile(dirCustom +string(image+"_"+idContainer+".yml"), []byte(output), 0644)
    if err != nil {
 	  log.Fatalln(err)
    }
 }
 
 // Copy configuration file to /usr/share/metricbeat/custom/, open the file and setidConfiguration.
-// 	Nomconf is the name of the image docker hub.
+// 	image is the name of the image docker hub.
 // 	Application_type must be set by user for setting configuration processors,
-// if not nomconf is checked for matching similar file configuration.
+// 	if not nomconf is checked for matching similar file configuration.
 // 	id is the id of the container.
-func setConfigServices(image string, application_type string, id string)  {
+func setConfigServices(image string, application_type string, id string, ip string)  {
    if application_type == "" {
 	  application_type = image
    }
@@ -81,7 +84,7 @@ func setConfigServices(image string, application_type string, id string)  {
 
    // replace the id in the file configuration with the ids in data
    // find host: [" and replace to host : ["id"] in the custom configuration
-   setidConfiguration(id, application_type)
+   setidConfiguration(id, application_type, ip)
    println(">> configuration is set: "+string(agentName))
 }
 

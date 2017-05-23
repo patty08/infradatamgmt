@@ -8,32 +8,25 @@ import (
 	"time"
 )
 
-// *** Strategy Agent ***
-
-// interface for agent setting
+// Interface for an agent setting
 type AgentIn interface {
 	AddEventListener(c chan *agent.InfoIN, who string) error
 }
 
-// structure for calling agent
+// Structure for an input agent
 type sAgentIn struct {
 	AgentIn AgentIn
 }
 
-// *** End Strategy Agent ***
-// *** Strategy client ***
-
-//interface for client out settings
+// Interface for clients/services settings
 type ClientOut interface {
 	SetAction(info *agent.InfoIN) error
 }
 
-// Structure for calling client
+// Structure for an output client/service
 type sClientOut struct {
 	aClientOut ClientOut
 }
-
-// *** End Strategy client ***
 
 
 func process(i *agent.InfoIN) error {
@@ -65,8 +58,8 @@ func process(i *agent.InfoIN) error {
 	fmt.Println(lireFichier)
 }*/
 
-// start agent and open channels in and out stream
-// input channel an listen to the structure value stream
+// Start agent and open channels in and out stream.
+// Input channel an listen to the structure value stream.
 func Start() {
 	// open input channel and listening
 	listener := make(chan *agent.InfoIN)

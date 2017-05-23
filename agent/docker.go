@@ -9,16 +9,18 @@ import (
    "golang.org/x/net/context"
    "strconv"
    "time"
+   "os"
 )
 
-// label for activate monitoring
+// Label for activate monitoring.
 const label_monitoring string = "monitor"
+const dirCustom string = "./rooter/configuration/metricbeat/conf/custom/"
 
 // Struct for strategy module
 type AgentDocker struct {}
 
-// Add Event Listener in Docker client
-// IN : main chan for send InfoIn event
+// Add Event Listener in Docker client.
+// IN : main chan for send InfoIn event.
 func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
 	client, err := connectDocker(who);
 	if err != nil {
@@ -30,8 +32,7 @@ func (AgentDocker) AddEventListener(main chan *InfoIN, who string) error {
    return nil
 }
 
-// Connect agent to docker API
-
+// Connect agent to docker API.
 func connectDocker(who string) (*client.Client, error) {
 	client, err := client.NewClient(who, "1.25", nil, nil)
 	if err != nil {
@@ -42,15 +43,15 @@ func connectDocker(who string) (*client.Client, error) {
 	return client, nil
 }
 
-// Start event listener on docker client
+// Start event listener on docker client.
 func addDockerListener (client *client.Client, main chan *InfoIN) {
    fmt.Println("Successfully start Event Listener")
 
+   // listen to event values to run an action
    f := filters.NewArgs()
-   f.Add("event", "create")
    f.Add("event", "start")
    f.Add("event", "die")
-   f.Add("event", "destroy")
+   // TODO: f.Add("event", "destroy") , pouvoir detacher le container (supprimer fichier de configuration, etc)
    f.Add("type", "container")
    f.Add("label", label_monitoring+"=enabled")
    options := types.EventsOptions{Filters: f}
@@ -60,7 +61,7 @@ func addDockerListener (client *client.Client, main chan *InfoIN) {
 
    go func(){
 	  for event := range eventsChan {
-		 go parseDockerEvent(event, main)
+		 go parseDockerEvent(event, main, client)
 	  }
 
    }()
@@ -72,12 +73,13 @@ func addDockerListener (client *client.Client, main chan *InfoIN) {
    defer cancel()
 }
 
-// Parse docker envent information for rooter
-func parseDockerEvent(event events.Message, main chan *InfoIN) {
+// Parse docker envent information for rooter.
+func parseDockerEvent(event events.Message, main chan *InfoIN, client *client.Client)  {
 	infos := &InfoIN{}
 	infos.Action = event.Action
 	if infos.Action == "die" || infos.Action == "pause" {
 		infos.Action = "stop"
+	   	println("TODO delete configuration")
 	} else if infos.Action == "unpause" {
 		infos.Action = "start"
 	} else if infos.Action == "destroy" {
@@ -87,13 +89,13 @@ func parseDockerEvent(event events.Message, main chan *InfoIN) {
 	infos.Services = []string{}
 	infos.Data = map[string]string{}
 
-	infos.Data["id"] = event.ID
-	infos.Data["action"] = event.Action
-	infos.Data["type"] = event.Type
-	infos.Data["timestamp"] = strconv.FormatInt(event.Time, 10)
-	infos.Data["time"] = time.Unix(event.Time, 0).String()
-
-	for k,v := range event.Actor.Attributes {
+   infos.Data["id"] = event.ID
+   infos.Data["action"] = event.Action
+   infos.Data["type"] = event.Type
+   infos.Data["timestamp"] = strconv.FormatInt(event.Time, 10)
+   infos.Data["time"] = time.Unix(event.Time, 0).String()
+   infos.Data["ip"] = string(getIpContainer(client, event.ID))
+   for k,v := range event.Actor.Attributes {
 		if v == "enabled" && k != label_monitoring {
 			infos.Services = append(infos.Services, k)
 		}
@@ -101,4 +103,15 @@ func parseDockerEvent(event events.Message, main chan *InfoIN) {
 	}
 
 	main <- infos
+}
+// get id's container in instance and return as a string.
+// client is current running container.
+// containerID is the id of the container.
+func getIpContainer(client *client.Client, containerID  string) string{
+   inspect_result, err := client.ContainerInspect(context.Background(), containerID)
+   if err != nil {
+	  println("error")
+   }
+   ipHost := inspect_result.NetworkSettings.IPAddress
+   return ipHost
 }

@@ -5,11 +5,12 @@ import (
    "errors"
 )
 
-// data structure for stdout service
+// Data structure for stdout service
 type ServiceStdout struct {}
 
-// function to take action sting
-func (ServiceStdout) SetAction(action string, data map[string]string) error {
+
+// Get action from the rooter in order to send to services stdout.
+func (ServiceStdout) GetAction(action string, data map[string]string) error {
    if action == "" {
 	  return errors.New("No action event")
    }

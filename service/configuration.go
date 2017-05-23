@@ -128,5 +128,13 @@ func CopyFile(in io.Reader, dst string) (err error) {
    err = out.Sync()
    return
 }
-
+// Todo: Delete all container's configurations (file, etc)
+func detachContainer(data map[string]string){
+	err:= os.Remove(dirCustom +data["application_type"]+"_"+data["id"]+".yml")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	println("Detached..")
+}
 

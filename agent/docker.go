@@ -115,13 +115,3 @@ func getIpContainer(client *client.Client, containerID  string) string{
    ipHost := inspect_result.NetworkSettings.IPAddress
    return ipHost
 }
-
-// TODO: Function to remove container's configuration file
-func detachContainer(main *InfoIN){
-   err:= os.Remove(dirCustom +main.Data["application_type"]+"_"+main.Data["id"]+".yml")
-   if err != nil {
-	  fmt.Println(err)
-	  return
-   }
-	println("Detached..")
-}

@@ -1,9 +1,9 @@
 package main
 
 import (
-   "github.com/sebastienmusso/infradatamgmt/rooter"
+    "github.com/sebastienmusso/infradatamgmt/cmd"
 )
 
 func main() {
-    rooter.Start()
+    cmd.Start()
 }

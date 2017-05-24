@@ -1,0 +1,20 @@
+{
+  "description" : "Ingest pipeline for tomcat & catalina logs",
+  "processors" : [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": ["%{TOMCATLOG}|%{CATALINALOG}|%{TOMCAT_DATE_PERSO:timestamp} %{LOGLEVEL:level} \\[%{DATA:thread}\\] %{JAVACLASS:class}\\.%{JAVAMETHOD:method} %{GREEDYDATA:logmessage}"],
+        "pattern_definitions": {
+          "TOMCAT_DATE_PERSO" : "%{TOMCAT_DATESTAMP}|%{CATALINA_DATESTAMP}|%{MONTHDAY}-%{MONTH}-%{YEAR} %{TIME}.%{INT}"
+        }
+      }
+    },
+    {
+      "date": {
+        "field": "timestamp",
+        "formats": [ "dd-MMM-YYYY HH:mm:ss.SSS", "YYYY-MM-dd HH:mm:ss Z", "MMM dd, yyyy HH:mm:ss a" ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "description" : "Ingest pipeline for apache standart access logs",
+  "processors" : [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": ["%{COMMONAPACHELOG}"]
+      }
+    },
+    {
+      "date": {
+        "field": "timestamp",
+        "formats": [ "dd/MMM/YYYY:HH:mm:ss Z" ]
+      }
+    }
+  ]
+}

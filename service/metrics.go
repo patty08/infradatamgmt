@@ -1,10 +1,5 @@
 package service
 
-import (
-   "fmt"
-
-)
-
 // Data strcuture for metrics service.
 type ServiceMetrics struct {}
 

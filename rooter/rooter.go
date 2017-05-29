@@ -48,16 +48,6 @@ func process(i *agent.InfoIN) error {
 	return err
 }
 
-// TODO implementation config file for rooter
-/*func parseConfig(namefile string) {
-	stream, err := ioutil.ReadFile(namefile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	lireFichier := string(stream)
-	fmt.Println(lireFichier)
-}*/
-
 // Start agent and open channels in and out stream.
 // Input channel an listen to the structure value stream.
 func Start() {

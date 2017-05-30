@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"github.com/elgs/gostrgen"
 	"os"
 )
 
@@ -22,10 +21,6 @@ func TestFormatMetricHostName(t *testing.T)  {
 	ip = ""
 	out =formatMetricHostName(ip)
 	assert.Equal(t,"hosts: [\"\"]",out,"Error Empty host")
-	ip,err := gostrgen.RandGen(10, gostrgen.Lower,"","")
-	assert.Nil(t,err)
-	out =formatMetricHostName(ip)
-	assert.Equal(t,"hosts: [\""+ ip +"\"]",out,"Error Reformat Host name")
 
 }
 

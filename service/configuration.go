@@ -5,6 +5,7 @@ import (
    "fmt"
    "io"
    "bytes"
+	"github.com/spf13/viper"
 )
 
 // Change agent's name in parameters to file name (eg: surikator -> surikator.yml).
@@ -48,5 +49,17 @@ func CopyFile(in io.Reader, dst string) (err error) {
    return
 }
 
+// Search and load yalm config file
+func loadConfigFile(file string) *viper.Viper{
+	cfg := viper.New()
+	cfg.SetConfigFile(file)
+	err := cfg.ReadInConfig()
+	if err != nil {
+		_, e := os.Create(file)
+		if e != nil {
+			panic(e)
+		}
+	}
 
-
+	return cfg
+}

@@ -10,8 +10,8 @@ import (
 )
 
 // configuration directory
-const dirOriginal string = "./rooter/configuration/metricbeat/conf/original/"
-const dirCustom string = "./rooter/configuration/metricbeat/conf/custom/"
+const metricDirOriginal string = "./rooter/configuration/metricbeat/conf/original/"
+const metricDirCustom string = "./rooter/configuration/metricbeat/conf/custom/"
 
 // Data strcuture for metrics service.
 type ServiceMetrics struct {}
@@ -58,15 +58,15 @@ func setConfigMetricServices(image string, application_type string, id string, i
 	agentName := formatNameConfig(application_type)
 
 	// check if the configuration is available in host
-	file, err := os.OpenFile(dirOriginal +string(agentName),0,777)
+	file, err := os.OpenFile(metricDirOriginal +string(agentName),0,777)
 	if err != nil {
-		fmt.Println("src file not found:" +dirOriginal +agentName)
+		fmt.Println("src file not found:" +metricDirOriginal +agentName)
 		println(err)
 	}
 	// close at last
 	defer file.Close()
 
-	CopyFile(file, dirCustom +application_type+"_"+id+".yml")
+	CopyFile(file, metricDirCustom +application_type+"_"+id+".yml")
 
 	// replace the id in the file configuration with the ids in data
 	// find host: [" and replace to host : ["id"] in the custom configuration
@@ -85,9 +85,9 @@ func setMetricIpConfiguration(idContainer string, image string, ipContainer stri
 
 	// get file name from the name agent
 	// check if the configuration is available in host
-	fd, err := ioutil.ReadFile(dirCustom +image+"_"+idContainer+".yml")
+	fd, err := ioutil.ReadFile(metricDirCustom +image+"_"+idContainer+".yml")
 	if err != nil {
-		println("dest file not found:"+ dirCustom + image + "_" + idContainer+ ".yml")
+		println("dest file not found:"+ metricDirCustom + image + "_" + idContainer+ ".yml")
 		log.Fatalln(err)
 	}
 
@@ -98,7 +98,7 @@ func setMetricIpConfiguration(idContainer string, image string, ipContainer stri
 		}
 	}
 	output := strings.Join(lines, "\n")
-	err = ioutil.WriteFile(dirCustom +string(image+"_"+idContainer+".yml"), []byte(output), 0644)
+	err = ioutil.WriteFile(metricDirCustom +string(image+"_"+idContainer+".yml"), []byte(output), 0644)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -106,7 +106,7 @@ func setMetricIpConfiguration(idContainer string, image string, ipContainer stri
 
 // Delete configuration file when the container is removed or stopped.
 func detachMetricConfiguration(data map[string]string){
-	err:= os.Remove(dirCustom +data["application_type"]+"_"+data["id"]+".yml")
+	err:= os.Remove(metricDirCustom +data["application_type"]+"_"+data["id"]+".yml")
 	if err != nil {
 		fmt.Println(err)
 		return

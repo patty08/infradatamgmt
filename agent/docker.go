@@ -61,7 +61,7 @@ func addDockerListener (client *client.Client, main chan *InfoIN) {
 
 	go func(){
 		for event := range eventsChan {
-			go parseDockerEvent(event, main, client)
+			go processDockerEvent(event, main, client)
 		}
 
 	}()
@@ -73,8 +73,21 @@ func addDockerListener (client *client.Client, main chan *InfoIN) {
 	defer cancel()
 }
 
+// Process docker event information for rooter.
+func processDockerEvent(event events.Message, main chan *InfoIN, client *client.Client)  {
+	data := map[string]string{}
+
+	// Inspect Container for more information
+	inspect, err := client.ContainerInspect(context.Background(), event.ID)
+	if err == nil {
+		data["ip"] = string(inspect.NetworkSettings.IPAddress)
+	}
+
+	parseDockerEvent(event, data, main)
+}
+
 // Parse docker event information for rooter.
-func parseDockerEvent(event events.Message, main chan *InfoIN, client *client.Client)  {
+func parseDockerEvent(event events.Message, inspect map[string]string, main chan *InfoIN)  {
 	infos := &InfoIN{}
 	infos.Action = event.Action
 	if infos.Action == "die" || infos.Action == "pause" {
@@ -94,9 +107,8 @@ func parseDockerEvent(event events.Message, main chan *InfoIN, client *client.Cl
 	infos.Data["timestamp"] = strconv.FormatInt(event.Time, 10)
 	infos.Data["time"] = time.Unix(event.Time, 0).String()
 
-	inspect, err := client.ContainerInspect(context.Background(), event.ID)
-	if err == nil {
-		infos.Data["ip"] = string(inspect.NetworkSettings.IPAddress)
+	for k,v := range inspect {
+		infos.Data[k] = v
 	}
 
 	for k,v := range event.Actor.Attributes {

@@ -32,7 +32,7 @@ func TestParseDockerEvent(t *testing.T) {
 		Time : 1493883345,
 	}
 
-	parseDockerEvent(eventData, listener)
+	parseDockerEvent(eventData, map[string]string{}, listener)
 	out := <-listener
 
 	assert.Equal(t, "create", out.Action, "Error parse Action")
@@ -55,7 +55,7 @@ func TestParseDockerEvent(t *testing.T) {
 		},
 	}
 
-	parseDockerEvent(eventData, listener)
+	parseDockerEvent(eventData, map[string]string{}, listener)
 	out = <-listener
 
 	assert.Equal(t, "stop", out.Action, "Error parse Action")
@@ -67,19 +67,19 @@ func TestParseDockerEventAction(t *testing.T) {
 	listener := make(chan *InfoIN, 1)
 
 	eventData := events.Message{Action :"destroy",}
-	parseDockerEvent(eventData, listener)
+	parseDockerEvent(eventData, map[string]string{}, listener)
 	out := <-listener
 
 	assert.Equal(t, "delete", out.Action, "Error parse Action")
 
 	eventData = events.Message{Action :"unpause",}
-	parseDockerEvent(eventData, listener)
+	parseDockerEvent(eventData, map[string]string{}, listener)
 	out = <-listener
 
 	assert.Equal(t, "start", out.Action, "Error parse Action")
 
 	eventData = events.Message{Action :"pause",}
-	parseDockerEvent(eventData, listener)
+	parseDockerEvent(eventData, map[string]string{}, listener)
 	out = <-listener
 
 	assert.Equal(t, "stop", out.Action, "Error parse Action")

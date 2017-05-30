@@ -2,5 +2,5 @@ tomcat:
   directory:
     - "/var/tomcat/log/"
   grock:
-    - "access-logs.json"
-    - "tomcat-logs.json"
+    - "access-logs"
+    - "tomcat-logs"

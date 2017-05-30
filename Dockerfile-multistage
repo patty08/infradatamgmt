@@ -4,9 +4,9 @@ RUN mkdir -p /go/src/github.com/sebastienmusso/infradatamgmt
 WORKDIR /go/src/github.com/sebastienmusso/infradatamgmt
 COPY . .
 RUN go get -v
-RUN go build -o surikat
+RUN go build -o surikator
 
 FROM ubuntu
 WORKDIR /root
-COPY --from=builder /go/src/github.com/sebastienmusso/infradatamgmt/surikat .
-CMD ["./surikat"]
+COPY --from=builder /go/src/github.com/sebastienmusso/infradatamgmt/surikator .
+CMD ["./surikator"]

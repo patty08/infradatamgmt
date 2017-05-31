@@ -1,7 +1,7 @@
 Surikator
 --
-Surikator is [middleware](https://en.wikipedia.org/wiki/Middleware) written in Go langage, that you run in [CLI](https://en.wikipedia.org/wiki/CLI) to capture events from Docker containers
-of operational data (Docker events are structured as ID and LABEL). These events are formated, parsed then
+Surikator is [middleware](https://en.wikipedia.org/wiki/Middleware) written in Go language, that you run in [CLI](https://en.wikipedia.org/wiki/CLI) to capture events from orchestrators (docker containers)
+of operational data (docker events are structured as ID and LABEL). These events are formated, parsed then
 send the operational data to Elasticsearch, so it can be visualized with Kibana.
 
 

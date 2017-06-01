@@ -11,6 +11,4 @@ func TestSetActionMetrics(t *testing.T) {
 
 	err := service.GetAction("create", map[string]string {})
 	assert.Nil(t, err)
-
-	//TODO write unit test
 }

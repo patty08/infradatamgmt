@@ -12,27 +12,29 @@ import (
 type ServiceLogging struct {}
 
 const loggingDirPipeline string = "./rooter/configuration/elasticsearch/pipeline/"
+const loggingCfgFilebeat string = "./rooter/configuration/filebeat/original/filebeat.yml"
+const loggingDirCfgFilebeat string = "./rooter/configuration/filebeat/custom/"
 
 // Get action from the rooter in order to send to services logging.
-func (ServiceLogging) GetAction(action string, data map[string]string) error {
+func (ServiceLogging) GetAction(action string, data map[string]string, client chan *ClientIN) error {
 	println("AGENT LOGGING : " + action)
 	switch action {
 		case "stop":
 			if len(data["application_type"]) == 0 {
 				data["application_type"] = data["image"]
 			}
-			removeLogging(data["application_type"])
+			removeLogging(data["application_type"], data, client)
 		case "start":
 			if len(data["application_type"]) == 0 {
 				data["application_type"] = data["image"]
 			}
-			deployLogging(data["application_type"])
+			deployLogging(data["application_type"], data, client)
 	}
 
 	return nil
 }
 
-func deployLogging(service string) {
+func deployLogging(service string, data map[string]string, client chan *ClientIN) {
 	cfg := loadConfigFile("./service/logging.yml")
 
 	// if needed deploy fileBeat
@@ -43,11 +45,24 @@ func deployLogging(service string) {
 			sendPipeline(grock, loggingDirPipeline + grock + ".json")
 		}
 
+		infos := &ClientIN{}
+		infos.Action = "start"
+		infos.Data = map[string]string{}
+
+		infos.Data["image"] = "docker.elastic.co/beats/filebeat:5.2.1"
+		infos.Data["who_id"] = data["id"]
+		infos.Data["who_name"] = data["name"]
+		infos.Data["volume_from"] = "true"
+		infos.Data["volume"] = "true"
+		infos.Data["volume_src"] = loggingCfgFilebeat
+		infos.Data["volume_container"] = "/usr/share/filebeat/filebeat.yml"
+
+		client <- infos
 		// TODO : start filebeat
 	}
 }
 
-func removeLogging(service string) {
+func removeLogging(service string, data map[string]string, client chan *ClientIN) {
 	cfg := loadConfigFile("./service/logging.yml")
 
 	// if had need deploy filebeat

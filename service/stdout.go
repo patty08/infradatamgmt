@@ -10,7 +10,7 @@ type ServiceStdout struct {}
 
 
 // Get action from the rooter in order to send to services stdout.
-func (ServiceStdout) GetAction(action string, data map[string]string) error {
+func (ServiceStdout) GetAction(action string, data map[string]string, client chan *ClientIN) error {
    if action == "" {
 	  return errors.New("No action event")
    }

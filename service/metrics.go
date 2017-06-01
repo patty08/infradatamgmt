@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 	"os"
+	"github.com/docker/docker/cli/command/service"
 )
 
 // configuration directory
@@ -18,7 +19,7 @@ type ServiceMetrics struct {}
 
 
 // Get action from the rooter in order to send to services metrics.
-func (ServiceMetrics) GetAction(action string, data map[string]string) error {
+func (ServiceMetrics) GetAction(action string, data map[string]string, client chan *ClientIN) error {
    switch action {
    case "stop":
 	   detachMetricConfiguration(data)

@@ -1,0 +1,24 @@
+version: '3'
+services:
+  surikator:
+    image: surikator
+    build: .
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./rooter/configuration/metricbeat/conf:/go/src/github.com/sebastienmusso/infradatamgmt/rooter/configuration/metricbeat/conf
+  metricbeat:
+    image:  docker.elastic.co/beats/metricbeat:5.4.0
+    ports:
+     - "9200:9200"
+    environment:
+     - xpack.security.enabled=false
+     - ELASTICSEARCH_URL=http://localhost:9200
+    volumes:
+     - ./rooter/configuration/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+     - ./rooter/configuration/metricbeat/conf:/usr/share/metricbeat/conf
+     - /proc:/hostfs/proc:ro
+     - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+     - /:/hostfs:ro
+    network_mode: "host"
+    depends_on:
+        - surikator

@@ -1,0 +1,20 @@
+filebeat.prospectors:
+- input_type: log
+  paths:
+    - /usr/local/tomcat/logs/*.txt
+  tags: ["access-logs"]
+  fields.kind: "tomcat-access-logs"
+
+- input_type: log
+  paths:
+    - /usr/local/tomcat/logs/*.log
+  multiline.pattern: '^[[:space:]]+|^Caused by:'
+  multiline.negate: false
+  multiline.match: after
+  tags: ["tomcat-logs"]
+  fields.kind: "tomcat-logs"
+
+output.elasticsearch:
+  pipeline: "%{[fields.kind]:logs}"
+  index: "filebeat-%{[fields.kind]:logs}-%{+YYYY.MM.dd}"
+  hosts: ["elk-ip"]

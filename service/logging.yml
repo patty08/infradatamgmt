@@ -1,6 +1,5 @@
+# Only service who required filebeat for activated logging
 tomcat:
-  directory:
-    - "/var/tomcat/log/"
   grock:
     - "access-logs"
     - "tomcat-logs"

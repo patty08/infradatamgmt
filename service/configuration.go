@@ -19,6 +19,21 @@ func formatNameConfig(a string) string {
 }
 
 // Copy source file in argument to destination source. The path where the file must be paste (see: dirOriginal, dirCustom)
+func CopyFilePath(in string, dst string) (err error) {
+
+	out, err := os.Open(in)
+	if err != nil {
+		fmt.Println("Error open in file", err)
+		return
+	}
+
+	CopyFile(out, dst)
+
+	out.Close()
+	return nil
+}
+
+// Copy source file in argument to destination source. The path where the file must be paste (see: dirOriginal, dirCustom)
 func CopyFile(in io.Reader, dst string) (err error) {
 
    // Does file already exist? Skip

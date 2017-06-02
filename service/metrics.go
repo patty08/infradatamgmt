@@ -7,7 +7,6 @@ import (
 	"log"
 	"strings"
 	"os"
-	"github.com/docker/docker/cli/command/service"
 )
 
 // configuration directory

@@ -4,11 +4,14 @@ import (
     "github.com/sebastienmusso/infradatamgmt/agent"
     "github.com/sebastienmusso/infradatamgmt/service"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
 	"fmt"
 	"time"
+	"github.com/pkg/errors"
 )
 
 // Client structure.
@@ -52,7 +55,12 @@ func listener(c chan *service.ClientIN) {
 			cfg, hostCfg := containerConfig(i.Data)
 			startContainer(i.Data["name"], cfg, hostCfg)
 		case "stop":
-
+			id, err := containerIdByName(i.Data["name"])
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			stopContainer(id)
 		case "end":
 			close(c)
 			return
@@ -70,19 +78,31 @@ func containerConfig(data map[string]string) (*container.Config, *container.Host
 			"maintainer" : "surikator",
 			"associate-name" : data["who_name"],
 			"associate-id" : data["who_id"],
+			"monitor" : "enabled",
+			"stdout" : "enabled",
 		},
 	}
 
-	if data["volume"] {
-		cfg.Volumes = map[string]struct{} {
-			data["volume_src"] : {data["volume_container"]},
-		}
+	if len(data["user"]) > 0 {
+		cfg.User = data["user"]
 	}
 
 	hostCfg := &container.HostConfig{}
-	if data["volume_from"] {
-		hostCfg.VolumesFrom = []string{data["who_name"]}
+
+	if data["net-host"] == "true" {
+		hostCfg.NetworkMode = "host"
 	}
+
+	if data["volume"] == "true" {
+		hostCfg.Binds = []string {
+			data["volume_src"]+":"+data["volume_container"],
+		}
+	}
+
+	if len(data["volume_from"]) > 0 {
+		hostCfg.VolumesFrom = []string{data["volume_from"]}
+	}
+
 	return cfg, hostCfg
 }
 
@@ -92,7 +112,15 @@ func startContainer(name string, cfg *container.Config, hostCfg *container.HostC
 		return fmt.Errorf("Unable to start Docker client :\n- %s", err)
 	}
 
-	r, err := client.ContainerCreate(context.Background(), cfg, hostCfg, nil, name)
+	net := map[string]*network.EndpointSettings{
+		"host": {},
+	}
+
+	n := &network.NetworkingConfig{
+		EndpointsConfig: net,
+	}
+
+	r, err := client.ContainerCreate(context.Background(), cfg, hostCfg, n, name)
 	if err != nil {
 		fmt.Println("Could not create container", err)
 		return err
@@ -104,6 +132,46 @@ func startContainer(name string, cfg *container.Config, hostCfg *container.HostC
 	}
 
 	return nil
+}
+
+func stopContainer(id string) error {
+	client, err := connectDocker("unix:///var/run/docker.sock")
+	if err != nil {
+		return fmt.Errorf("Unable to start Docker client :\n- %s", err)
+	}
+
+	err = client.ContainerKill(context.Background(), id, "")
+	if err != nil {
+		return err
+	}
+
+	err = client.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func containerIdByName(who string) (string, error) {
+	client, err := connectDocker("unix:///var/run/docker.sock")
+	if err != nil {
+		return "", fmt.Errorf("Unable to start Docker client :\n- %s", err)
+	}
+
+	f := filters.NewArgs()
+	f.Add("name", who)
+
+	i, err := client.ContainerList(context.Background(), types.ContainerListOptions{Filters: f})
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	if len(i) == 1 {
+		return i[0].ID, nil
+	}
+
+	return "", errors.New("No container found")
 }
 
 // Connect to docker API.

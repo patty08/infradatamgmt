@@ -9,9 +9,8 @@ import (
 func TestSetActionMetrics(t *testing.T) {
 	service := ServiceMetrics{}
 
-	err := service.GetAction("create", map[string]string {})
+	err := service.GetAction("create", map[string]string {}, nil)
 	assert.Nil(t, err)
-
 }
 func TestFormatMetricHostName(t *testing.T)  {
 

@@ -203,3 +203,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/go,osx,linux,windows,eclipse,intellij
+/rooter/configuration/metricbeat/conf/custom/

@@ -28,8 +28,3 @@ func TestCopyFile(t *testing.T) {
 
    defer ofile.Close()
 }
-
-func TestServiceMetrics_GetAction(t *testing.T) {
-
-
-}

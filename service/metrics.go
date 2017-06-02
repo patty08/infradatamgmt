@@ -50,23 +50,6 @@ func setConfigMetricServices(image string, application_type string, id string, i
    if application_type == "" {
 	  application_type = image
    }
-   /*application_type = strings.ToLower(application_type)
-   // check if configuration exist
-   println(application_type)
-
-   // get file name from name agent: name.yml
-   agentName := formatNameConfig(application_type)
-
-   // check if the configuration is available in host
-
-   file, err := os.OpenFile(dirOriginal +string(agentName),0,777)
-   if err != nil {
-	   fmt.Println("src file not found:" +dirOriginal +agentName)
-	   println(err)
-   }
-   // close at last
-   defer file.Close()
-*/
    file, err := os.OpenFile(dirOriginal +application_type+".yml",0,777)
    if err != nil {
 	  fmt.Println("src file not found:" +dirOriginal +application_type+".yml")
@@ -75,7 +58,6 @@ func setConfigMetricServices(image string, application_type string, id string, i
    }else {
 	  defer file.Close()
 	  CopyFile(file, dirCustom +application_type+"_"+id+".yml")
-
 	  // replace the id in the file configuration with the ids in data
 	  // find host: [" and replace to host : ["id"] in the custom configuration
 	  setMetricIpConfiguration(id, application_type, ip)
